@@ -20,7 +20,7 @@ class MovieServices {
 
       return movies;
     } else {
-      throw Exception('Failed to load movie');
+      throw Exception('Failed to load movies');
     }
   }
 }

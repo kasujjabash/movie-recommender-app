@@ -12,9 +12,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final MovieServices _movieServices =
-      MovieServices(); //? This is an instance to the MovieService
-  List<Movie> _movies = []; // initialize an empty list
+  //? This is an instance to the MovieService
+  final MovieServices _movieServices = MovieServices();
+
+  // initialize an empty list, the use of this list is to store movies fetched from the api
+  List<Movie> _movies = [];
 
   @override
   void initState() {
@@ -42,7 +44,7 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
               background: FutureBuilder(
-                future: _fetchMovies(),
+                future: _movieServices.fetcheMovies(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -55,12 +57,12 @@ class _HomePageState extends State<HomePage> {
                           builder: (BuildContext context) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              // margin:
+                              //     const EdgeInsets.symmetric(horizontal: 5.0),
                               child: Image.network(
-                                  'https://image.tmdb.org/t/p/original/${[
-                                'poster_path'
-                              ]}'),
+                                'https://image.tmdb.org/t/p/original/${movies.posterPath}',
+                                fit: BoxFit.cover,
+                              ),
                             );
                           },
                         );
@@ -68,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                       options: CarouselOptions(
                           viewportFraction: 1,
                           autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 1),
+                          autoPlayInterval: const Duration(seconds: 3),
                           height: MediaQuery.of(context).size.height),
                     );
                   }
@@ -78,7 +80,10 @@ class _HomePageState extends State<HomePage> {
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Trending'),
+                Text(
+                  'Trending',
+                  style: TextStyle(color: Colors.amber),
+                ),
                 SizedBox(
                   width: 10,
                 )
