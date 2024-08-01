@@ -1,8 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:movie/api/urls.dart';
 
-import '../api/model/movie_model.dart';
+import '../model/trending_movies_model.dart';
 import '../api/service.dart';
+import 'popular_movies_page.dart';
+import 'tvseries_page.dart';
+import 'playing_movie_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,24 +15,35 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  //? This is an instance to the MovieService
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  // Instance of the MovieService
   final MovieServices _movieServices = MovieServices();
 
-  // initialize an empty list, the use of this list is to store movies fetched from the api
-  List<Movie> _movies = [];
+  // Initialize an empty list to store movies fetched from the API
+  List<TrendingMovie> _movies = [];
+
+  // TabController for managing tabs
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _fetchMovies(); // call the fetch function
+    _tabController = TabController(length: 3, vsync: this);
+    _fetchTrendingMovies(); // Call the fetch function
   }
 
-  Future<void> _fetchMovies() async {
-    final movies = await _movieServices.fetcheMovies(); // fetch movies
+  Future<void> _fetchTrendingMovies() async {
+    final movies = await _movieServices
+        .fetchTrendingMovies(trendingMovies); // Fetch movies
     setState(() {
-      _movies = movies; // update the movie list
+      _movies = movies; // Update the movie list
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose(); // Dispose of the TabController when not needed
+    super.dispose();
   }
 
   @override
@@ -43,24 +58,24 @@ class _HomePageState extends State<HomePage> {
             expandedHeight: MediaQuery.of(context).size.height * 0.5,
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
-              background: FutureBuilder(
-                future: _movieServices.fetcheMovies(),
+              background: FutureBuilder<List<TrendingMovie>>(
+                future: _movieServices.fetchTrendingMovies(trendingMovies),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No movies available.'));
                   } else {
                     return CarouselSlider(
-                      items: _movies.map((movies) {
+                      items: snapshot.data!.map((movie) {
                         return Builder(
                           builder: (BuildContext context) {
-                            return Container(
+                            return SizedBox(
                               width: MediaQuery.of(context).size.width,
-                              // margin:
-                              //     const EdgeInsets.symmetric(horizontal: 5.0),
                               child: Image.network(
-                                'https://image.tmdb.org/t/p/original/${movies.posterPath}',
+                                'https://image.tmdb.org/t/p/original/${movie.posterPath}',
                                 fit: BoxFit.cover,
                               ),
                             );
@@ -68,10 +83,11 @@ class _HomePageState extends State<HomePage> {
                         );
                       }).toList(),
                       options: CarouselOptions(
-                          viewportFraction: 1,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 3),
-                          height: MediaQuery.of(context).size.height),
+                        viewportFraction: 1,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 3),
+                        height: MediaQuery.of(context).size.height,
+                      ),
                     );
                   }
                 },
@@ -82,20 +98,39 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   'Trending',
-                  style: TextStyle(color: Colors.amber),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
-                  width: 10,
-                )
+                SizedBox(width: 10),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: Container(
+                color: const Color.fromARGB(185, 0, 0, 0),
+                child: TabBar(
+                  labelColor: Colors.green,
+                  indicatorColor: Colors.green,
+                  unselectedLabelColor: Colors.white,
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: "Tv Series"),
+                    Tab(text: "On Air"),
+                    Tab(text: "Popular Movies"),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverFillRemaining(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                TvseriesPage(),
+                PlayingMoviePage(),
+                PopularMovies(),
               ],
             ),
           ),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            const Center(
-              child: Text('Simple Text'),
-            )
-          ]))
         ],
       ),
     );
