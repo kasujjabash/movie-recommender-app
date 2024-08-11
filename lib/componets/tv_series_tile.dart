@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie/api/urls.dart';
 import 'package:movie/model/tv_series_model.dart';
 
 import '../pages/details_page.dart';
@@ -16,7 +17,7 @@ class TvSeriesTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const DetailsPage(),
+              builder: (context) => DetailsPage(tvseries: tvseries),
             ),
           );
         },
