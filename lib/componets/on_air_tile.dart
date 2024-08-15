@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:movie/model/tv_series_model.dart';
-import '../details screen/tvseries_details_screen.dart';
+import 'package:movie/model/on_air_movies.dart';
 
-class TvSeriesTile extends StatelessWidget {
-  final TvSeries tvseries;
-  const TvSeriesTile({super.key, required this.tvseries});
+class OnAirMovieTile extends StatelessWidget {
+  final OnAirMovies playingmovie;
+  const OnAirMovieTile({super.key, required this.playingmovie});
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +11,12 @@ class TvSeriesTile extends StatelessWidget {
       padding: const EdgeInsets.only(right: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TvSeriesDetailsPage(tvseries: tvseries),
-            ),
-          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => DetailsPage(tvseries: tvseries),
+          //   ),
+          // );
         },
         child: Container(
           width: 250,
@@ -26,7 +25,7 @@ class TvSeriesTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             image: DecorationImage(
               image: NetworkImage(
-                'https://image.tmdb.org/t/p/original${tvseries.posterPath}',
+                'https://image.tmdb.org/t/p/original${playingmovie.posterPath}',
               ),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
@@ -39,23 +38,22 @@ class TvSeriesTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Name of the TV series
+              // Wrapping the text in Expanded to handle overflow
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4, left: 6),
                   child: Text(
-                    tvseries.name,
+                    playingmovie.name,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
-
-              // Rating container
+              // Star rating widget
               Padding(
                 padding: const EdgeInsets.only(top: 4, left: 6, right: 2),
                 child: Container(
@@ -73,7 +71,7 @@ class TvSeriesTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        tvseries.vote_average.toString(),
+                        playingmovie.vote_average.toString(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

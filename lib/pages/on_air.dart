@@ -1,42 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:movie/api/service.dart';
-import 'package:movie/componets/tv_series_tile.dart';
+import 'package:movie/componets/on_air_tile.dart';
 
-import '../model/tv_series_model.dart';
+import 'package:movie/model/on_air_movies.dart';
 
-class TvseriesPage extends StatefulWidget {
-  const TvseriesPage({super.key});
+class OnAirMoviesPage extends StatefulWidget {
+  const OnAirMoviesPage({
+    super.key,
+  });
 
   @override
-  State<TvseriesPage> createState() => _TvseriesPageState();
+  State<OnAirMoviesPage> createState() => _OnAirMoviesPageState();
 }
 
-class _TvseriesPageState extends State<TvseriesPage> {
+class _OnAirMoviesPageState extends State<OnAirMoviesPage> {
   // An instance for the service function
   final MovieServices _movieServices = MovieServices();
 
-  // An empty list to store the TV series
-  List<TvSeries> _series = [];
+  // An empty list to store the on aire movie
+  List<OnAirMovies> _onair = [];
 
   // initState
   @override
   void initState() {
     super.initState();
-    _fetchTvSeries();
+    _fetchOnAirMovie();
   }
 
-  Future<void> _fetchTvSeries() async {
-    final series = await _movieServices.fetchTvSeries(); // Fetch TV series
+  Future<void> _fetchOnAirMovie() async {
+    final onair = await _movieServices.onAir(); // Fetch TV series
     setState(() {
-      _series = series; // Update the TV series list
+      _onair = onair; // Update the onair list
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<TvSeries>>(
-        future: _movieServices.fetchTvSeries(),
+      body: FutureBuilder<List<OnAirMovies>>(
+        future: _movieServices.onAir(),
         builder: (context, snapshot) {
           // Checking if the data is loading
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -52,15 +54,14 @@ class _TvseriesPageState extends State<TvseriesPage> {
               child: Text("No TV series available"),
             );
           } else {
-            final tvSeriesList =
-                snapshot.data!; // Extract the list of TV series
+            final onAirList = snapshot.data!; // Extract the list of TV series
 
             // Split the list into two parts for two rows
-            final int halfLength = (tvSeriesList.length / 2).ceil();
-            final List<TvSeries> firstRowSeries =
-                tvSeriesList.take(halfLength).toList();
-            final List<TvSeries> secondRowSeries =
-                tvSeriesList.skip(halfLength).toList();
+            final int halfLength = (onAirList.length / 2).ceil();
+            final List<OnAirMovies> firstRowSeries =
+                onAirList.take(halfLength).toList();
+            final List<OnAirMovies> secondRowSeries =
+                onAirList.skip(halfLength).toList();
 
             return Padding(
               padding: const EdgeInsets.only(left: 10),
@@ -71,7 +72,7 @@ class _TvseriesPageState extends State<TvseriesPage> {
                     const SizedBox(height: 10),
                     // Popular text
                     const Text(
-                      'Popular TV Series',
+                      'Popular Movies playing',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -84,7 +85,8 @@ class _TvseriesPageState extends State<TvseriesPage> {
                         scrollDirection: Axis.horizontal,
                         itemCount: firstRowSeries.length,
                         itemBuilder: (context, index) {
-                          return TvSeriesTile(tvseries: firstRowSeries[index]);
+                          return OnAirMovieTile(
+                              playingmovie: firstRowSeries[index]);
                         },
                       ),
                     ),
@@ -106,12 +108,13 @@ class _TvseriesPageState extends State<TvseriesPage> {
                         scrollDirection: Axis.horizontal,
                         itemCount: secondRowSeries.length,
                         itemBuilder: (context, index) {
-                          return TvSeriesTile(tvseries: secondRowSeries[index]);
+                          return OnAirMovieTile(
+                              playingmovie: secondRowSeries[index]);
                         },
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 10,
                     )
                   ],

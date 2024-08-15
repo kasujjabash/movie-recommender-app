@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:movie/model/tv_series_model.dart';
-import '../details screen/tvseries_details_screen.dart';
+import 'package:movie/details%20screen/popular_detail_screen.dart';
+import 'package:movie/model/popular_movies_model.dart';
 
-class TvSeriesTile extends StatelessWidget {
-  final TvSeries tvseries;
-  const TvSeriesTile({super.key, required this.tvseries});
+class PopularMovieTile extends StatelessWidget {
+  final PopularMoviesModule commonmovie;
+  const PopularMovieTile({super.key, required this.commonmovie});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,8 @@ class TvSeriesTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TvSeriesDetailsPage(tvseries: tvseries),
+              builder: (context) =>
+                  PopularDetailsScreen(commonmovie: commonmovie),
             ),
           );
         },
@@ -26,9 +27,9 @@ class TvSeriesTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             image: DecorationImage(
               image: NetworkImage(
-                'https://image.tmdb.org/t/p/original${tvseries.posterPath}',
+                'https://image.tmdb.org/t/p/original${commonmovie.posterPath}',
               ),
-              fit: BoxFit.cover,
+              fit: BoxFit.cover, // Adjust fit to your preference
               colorFilter: ColorFilter.mode(
                 Colors.black.withOpacity(0.5),
                 BlendMode.darken,
@@ -39,23 +40,20 @@ class TvSeriesTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Name of the TV series
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4, left: 6),
                   child: Text(
-                    tvseries.name,
+                    commonmovie.name,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
+                    overflow: TextOverflow.ellipsis, // Prevent text overflow
                   ),
                 ),
               ),
-
-              // Rating container
               Padding(
                 padding: const EdgeInsets.only(top: 4, left: 6, right: 2),
                 child: Container(
@@ -73,7 +71,7 @@ class TvSeriesTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        tvseries.vote_average.toString(),
+                        commonmovie.vote_average.toString(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

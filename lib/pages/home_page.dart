@@ -6,7 +6,7 @@ import '../model/trending_movies_model.dart';
 import '../api/service.dart';
 import 'popular_movies_page.dart';
 import 'tvseries_page.dart';
-import 'playing_movie_page.dart';
+import 'on_air.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -113,9 +113,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   unselectedLabelColor: Colors.white,
                   controller: _tabController,
                   tabs: const [
-                    Tab(text: "Tv Series"),
-                    Tab(text: "On Air"),
                     Tab(text: "Popular Movies"),
+                    Tab(text: "On Air"),
+                    Tab(text: "Tv Series"),
                   ],
                 ),
               ),
@@ -125,9 +125,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: const [
-                TvseriesPage(),
-                PlayingMoviePage(),
                 PopularMovies(),
+                OnAirMoviesPage(),
+                TvseriesPage(),
               ],
             ),
           ),
